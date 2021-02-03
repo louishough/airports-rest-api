@@ -72,8 +72,12 @@ app.get('/airports/:icao', (req, res) => {
   const result = airports.filter((airport) => {
     return airport.icao == icao;
   });
-  console.log(`Returned Airport with id: ${icao}`);
-  res.send(result);
+  if (result.length != 0) {
+    console.log(`Returned Airport with id: ${icao}`);
+    res.send(result);
+  } else {
+    res.status(400).send(`No airport match of icao: ${icao}`);
+  }
 });
 
 /**
@@ -177,7 +181,21 @@ app.put('/airports/:icao', (req, res) => {
  *        description: Bad request. Check syntax of request body.
  */
 app.patch('/airports/:icao', (req, res) => {
-  //splice with id indexOf remove with splice and put
+  const id = req.params.icao;
+  const index = airports.indexOf(
+    airports.find((airport) => airport.icao === id)
+  );
+  const target = airports[index];
+  const requestedKeys = Object.keys(req.body);
+
+  if (index != -1) {
+    for (let key of requestedKeys) {
+      target[key] = req.body[key];
+    }
+    res.status(200).send(target);
+  } else {
+    res.status(400).send(`ID: ${id} does not match an airport`);
+  }
 });
 
 /**
