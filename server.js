@@ -146,7 +146,6 @@ app.put('/airports/:icao', (req, res) => {
   index != -1
     ? res.status(200).send(airports[index])
     : res.status(400).send('Bad Request');
-  //extract the key object.name =
 });
 
 /**
