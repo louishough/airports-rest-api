@@ -1,5 +1,8 @@
 const express = require('express');
 const app = express();
+const bodyParser = require('body-parser');
+
+app.use(bodyParser.json());
 
 // our airports json
 const airports = require('./airports.json');
@@ -37,6 +40,7 @@ const swaggerOptions = require('./openapi');
  *        description: Service currently unavailable
  */
 app.get('/airports', (req, res) => {
+  res.status(200);
   res.send(airports);
 });
 
@@ -88,7 +92,14 @@ app.get('/airports/:icao', (req, res) => {
  *      400:
  *        description: Bad request. Was your syntax correct?
  */
-app.post('/airports', (req, res) => {});
+app.post('/airports', (req, res) => {
+  const newAirport = req.body;
+  airports.push(newAirport);
+  console.log(`[${new Date().toLocaleTimeString()}] New Airport Added:`);
+  console.log(newAirport);
+  res.status(201)
+  res.send(newAirport);
+});
 
 /**
  * @swagger
