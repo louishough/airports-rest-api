@@ -69,11 +69,11 @@ app.get('/airports', (req, res) => {
  */
 app.get('/airports/:icao', (req, res) => {
   const icao = req.params.icao;
-  const result = airports.filter((airport) => {
-    return airport.icao == icao;
+  let result = airports.filter((airport) => {
+    return airport.icao.includes(icao.toUpperCase());
   });
   if (result.length != 0) {
-    console.log(`Returned Airport with id: ${icao}`);
+    console.log(`Returned Airport with id: ${icao.toUpperCase()}`);
     res.send(result);
   } else {
     res.status(400).send(`No airport match of icao: ${icao}`);
@@ -99,11 +99,13 @@ app.get('/airports/:icao', (req, res) => {
  */
 app.post('/airports', (req, res) => {
   const newAirport = req.body;
-  airports.push(newAirport);
-  console.log(`[${new Date().toLocaleTimeString()}] New Airport Added:`);
-  console.log(newAirport);
-  res.status(201);
-  res.send(airports[airports.length - 1]);
+  if (Object.keys(newAirport).length > 0) {
+    airports.push(newAirport);
+    res.status(201);
+    res.send(airports[airports.length - 1]);
+  } else {
+    res.send(400, 'Incorrect Airport Structure');
+  }
 });
 
 /**
