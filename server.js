@@ -70,8 +70,9 @@ app.get('/airports', (req, res) => {
 app.get('/airports/:icao', (req, res) => {
   const icao = req.params.icao;
   const result = airports.filter((airport) => {
-    airport.icao === icao;
+    return airport.icao == icao;
   });
+  console.log(`Returned Airport with id: ${icao}`);
   res.send(result);
 });
 
@@ -97,8 +98,8 @@ app.post('/airports', (req, res) => {
   airports.push(newAirport);
   console.log(`[${new Date().toLocaleTimeString()}] New Airport Added:`);
   console.log(newAirport);
-  res.status(201)
-  res.send(newAirport);
+  res.status(201);
+  res.send(airports[airports.length - 1]);
 });
 
 /**
@@ -132,7 +133,17 @@ app.post('/airports', (req, res) => {
  *      400:
  *        description: Bad request. Check syntax of request body.
  */
-app.put('/airports/:icao', (req, res) => {});
+app.put('/airports/:icao', (req, res) => {
+  const id = req.params.icao;
+  const index = airports.indexOf(
+    airports.find((airport) => airport.icao === id)
+  );
+  airports.splice(index, 1, req.body);
+  index != -1
+    ? res.status(200).send(airports[index])
+    : res.status(400).send('Bad Request');
+  //extract the key object.name =
+});
 
 /**
  * @swagger
@@ -165,7 +176,9 @@ app.put('/airports/:icao', (req, res) => {});
  *      400:
  *        description: Bad request. Check syntax of request body.
  */
-app.patch('/airports/:icao', (req, res) => {});
+app.patch('/airports/:icao', (req, res) => {
+  //splice with id indexOf remove with splice and put
+});
 
 /**
  * @swagger
@@ -192,7 +205,16 @@ app.patch('/airports/:icao', (req, res) => {});
  *      400:
  *        description: Bad request. Does this id relate to an existing airport.
  */
-app.delete('/airports/:icao', (req, res) => {});
+app.delete('/airports/:icao', (req, res) => {
+  const id = req.params.icao;
+  const index = airports.indexOf(
+    airports.find((airport) => airport.icao === id)
+  );
+  airports.splice(index, 1);
+  index != -1
+    ? res.status(200).send(`Airport with ICAO: ${id} deleted`)
+    : res.status(400).send(`Could not find airport with ICAO: ${id}`);
+});
 
 app.use(
   '/api-docs',
